@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To the Moonlight</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Indie+Flower" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Amatic+SC" />
+    <style>
+      body {
+        background: linear-gradient(to bottom, #1a237e, #0d47a1, #283593);
+        color: white;
+        font-family: 'Indie Flower', cursive;
+        margin: 0;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      h1 {
+        margin-top: 5%;
+        font-size: 4vw;
+        text-align: center;
+        color: #ffc107;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      }
+
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+      }
+
+      .marquee {
+        border: 2px solid #ffc107;
+        padding: 10px;
+        border-radius: 10px;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 630px;
+        margin: 0 auto;
+        color: white;
+        background: rgba(255, 193, 7, 0.1);
+        font-family: 'Amatic SC', cursive;
+        font-size: 1.5rem;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      }
+
+      @media (max-width: 992px) {
+        h1 {
+          font-size: 6vw;
+        }
+
+        .marquee {
+          font-size: 2rem;
+        }
+      }
+
+      @media (max-width: 576px) {
+        h1 {
+          font-size: 8vw;
+        }
+
+        .marquee {
+          font-size: 2.5rem;
+        }
+
+        .gallery-container img {
+          height: auto;
+        }
+      }
+
+      .btn-play {
+        background-color: #ffc107;
+        border: 2px solid white;
+        color: black;
+        font-family: 'Amatic SC', cursive;
+        font-size: 1.5rem;
+        padding: 10px 20px;
+        border-radius: 30px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .btn-play:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+      }
+
+      /* Grid gallery styling */
+      .gallery-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px auto;
+        max-width: 1200px;
+        padding: 10px;
+      }
+
+      .gallery-container .image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+      }
+
+      .gallery-container img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .gallery-container img:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+
+      .gallery-container .caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-family: 'Amatic SC', cursive;
+        font-size: 1rem;
+        text-align: center;
+        padding: 5px;
+        border-radius: 0 0 10px 10px;
+      }
+
+      /* Lightbox styling */
+      .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .lightbox img {
+        max-width: 90%;
+        max-height: 80%;
+        border-radius: 10px;
+      }
+
+      .lightbox .caption {
+        margin-top: 15px;
+        color: white;
+        text-align: center;
+        font-family: 'Amatic SC', cursive;
+        font-size: 1.5rem;
+      }
+
+      .lightbox.active {
+        display: flex;
+      }
+
+      /* Starry animation */
+      .star {
+        position: absolute;
+        border-radius: 50%;
+        background-color: white;
+        animation: sparkle 5s linear infinite;
+        opacity: 0.8;
+      }
+
+      @keyframes sparkle {
+        0% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.5;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <audio id="background-music" autoplay loop>
+      <source src="audio/moonlight.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+    <canvas></canvas>
+
+    <div class="content">
+      <h1>Happy 17th Birthday Nicca!</h1>
+      <br />
+      <center>
+        <div class="marquee">
+          <marquee class="fw-bold" scrollamount="5" behavior="right">
+            Happy birthday Nicca! Semoga kamu sehat selalu, selalu berada di lingkaran kebahagiaan, dan bisa menyelesaikan segala rintangan dengan mudah. Love You Moonlight 🌙
+          </marquee>
+        </div>
+        <br />
+        <button class="btn-play" id="play-button">Play Music</button>
+        <br />
+
+        <div class="gallery-container">
+          <img src="img/nicca_1.png" alt="Nicca Photo 1" data-caption=" Happy Birthday! Wishing you endless joy and success. 🎉" />
+          <img src="img/nicca_2.png" alt="Nicca Photo 2" data-caption=" Cheers to another year of awesomeness! 🥳" />
+          <img src="img/nicca_3.png" alt="Nicca Photo 3" data-caption=" May your day be filled with love and laughter. 🎂" />
+          <img src="img/nicca_4.png" alt="Nicca Photo 4" data-caption=" Here's to a fabulous year ahead! 🎈" />
+          <img src="img/nicca_5.png" alt="Nicca Photo 5" data-caption=" Wishing you all your heart desires on your special day. 💖" />
+          <img src="img/nicca_6.png" alt="Nicca Photo 1" data-caption=" Age is merely the number of years the world has enjoyed you! 🌎" />
+          <img src="img/nicca_7.png" alt="Nicca Photo 2" data-caption=" Have a birthday as incredible as you are! 🎉" />
+          <img src="img/nicca_8.png" alt="Nicca Photo 3" data-caption=" May your dreams come true this year. 🌟" />
+          <img src="img/nicca_9.png" alt="Nicca Photo 4" data-caption=" Stay amazing and keep shining. ✨" />
+          <img src="img/nicca_10png" alt="Nicca Photo 5" data-caption=" Wishing you love, laughter, and cake! hihi 🍰" />
+          <img src="img/nicca_11png" alt="Nicca Photo 1" data-caption=" May your year be as sweet as you are. 🎂" />
+          <img src="img/nicca_12png" alt="Nicca Photo 2" data-caption=" To the one who makes life brighter 🌞" />
+          <img src="img/nicca_13png" alt="Nicca Photo 3" data-caption=" A year older, a year bolder! 🎉" />
+          <img src="img/nicca_14png" alt="Nicca Photo 4" data-caption=" Your smile deserves to be celebrated every day—especially today. 😊" />
+          <img src="img/nicca_15png" alt="Nicca Photo 5" data-caption=" Here’s to another year of adventures and memories. 🎈" />
+          <img src="img/nicca_16png" alt="Nicca Photo 1" data-caption=" You’re not getting older; you’re leveling up! 🕹️" />
+          <img src="img/nicca_17png" alt="Nicca Photo 2" data-caption=" To the one who fills my lives with happiness. ❤️" />
+          <img src="img/nicca_18png" alt="Nicca Photo 3" data-caption=" Celebrate big, dream bigger! 🎂" />
+          <img src="img/nicca_19png" alt="Nicca Photo 4" data-caption=" May this year bring you closer to your dreams. 🌠" />
+          <img src="img/nicca_20png" alt="Nicca Photo 5" data-caption=" Life’s too short to think about the bad stuff! 🎉" />
+          <img src="img/nicca_21png" alt="Nicca Photo 1" data-caption=" You’re a treasure, and today we celebrate you. 💎" />
+          <img src="img/nicca_22png" alt="Nicca Photo 2" data-caption=" Wishing you good vibes and great times today! 🎈" />
+          <img src="img/nicca_23png" alt="Nicca Photo 3" data-caption=" You deserves all the happiness in the world. 🌟" />
+          <img src="img/nicca_24png" alt="Nicca Photo 4" data-caption=" Keep shining and making the world a better place. ✨" />
+          <img src="img/nicca_25png" alt="Nicca Photo 5" data-caption=" May your 17th birthday be as unforgettable as you are! 🎂" />
+          <img src="img/nicca_26png" alt="Nicca Photo 1" data-caption=" On this day, a star was born—Nicca! 🌠" />
+          <img src="img/nicca_27png" alt="Nicca Photo 2" data-caption=" Let’s make this birthday your best one yet! 🎉" />
+          <img src="img/nicca_28png" alt="Nicca Photo 3" data-caption=" Another year older, wiser, and more fabulous. 🎈" />
+          <img src="img/nicca_29png" alt="Nicca Photo 4" data-caption=" To a life filled with love and laughter! 💕" />
+          <img src="img/nicca_30png" alt="Nicca Photo 5" data-caption=" May your heart always stay as kind as it is today. ❤️" />
+          <img src="img/nicca_31png" alt="Nicca Photo 1" data-caption=" Keep being your incredible self! 🌟" />
+          <img src="img/nicca_32png" alt="Nicca Photo 2" data-caption=" May this birthday be the start of your best chapter yet! 🎂" />
+          <img src="img/nicca_33png" alt="Nicca Photo 1" data-caption=" To my brightest moonlight. 🌙" />
+          <img src="img/nicca_34png" alt="Nicca Photo 2" data-caption=" Happy Birthday to the brightest star in my life, Nicca. ✨" />
+        </div>
+      </center>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+      <img src="" alt="" id="lightbox-img" />
+      <div class="caption" id="lightbox-caption"></div>
+    </div>
+
+    <script>
+      // Lightbox functionality
+      const galleryImages = document.querySelectorAll('.gallery-container img');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const lightboxCaption = document.getElementById('lightbox-caption');
+
+      galleryImages.forEach((img) => {
+        img.addEventListener('click', () => {
+          lightboxImg.src = img.src;
+          lightboxCaption.textContent = img.getAttribute('data-caption');
+          lightbox.classList.add('active');
+        });
+      });
+
+      lightbox.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+      });
+
+      // Star generation
+      const canvas = document.querySelector('canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      function createStar() {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = Math.random() * window.innerWidth + 'px';
+        star.style.top = Math.random() * window.innerHeight + 'px';
+        star.style.width = Math.random() * 3 + 1 + 'px';
+        star.style.height = star.style.width;
+        star.style.animationDuration = Math.random() * 5 + 2 + 's';
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 7000);
+      }
+
+      function generateStars() {
+        setInterval(createStar, 100);
+      }
+
+      generateStars();
+
+      // Play music button functionality
+      const playButton = document.getElementById('play-button');
+      const audio = document.getElementById('background-music');
+      let isPlaying = true;
+
+      playButton.addEventListener('click', () => {
+        if (isPlaying) {
+          audio.pause();
+          playButton.textContent = 'Play Music';
+        } else {
+          audio.play().catch((error) => {
+            console.error('Error playing audio:', error);
+          });
+          playButton.textContent = 'Pause Music';
+        }
+        isPlaying = !isPlaying;
+      });
+
+      // Ensure button text matches audio state on load
+      document.addEventListener('DOMContentLoaded', () => {
+        if (audio.paused) {
+          playButton.textContent = 'Play Music';
+          isPlaying = false;
+        }
+      });
+    </script>
+  </body>
+</html>
